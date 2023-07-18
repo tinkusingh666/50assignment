@@ -1,0 +1,124 @@
+1>>[root@ip-172-31-37-139 09-deployments]# cd $home
+
+2>>[root@ip-172-31-37-139 ~]# git clone https://github.com/ashishrpandey/example-voting-app
+Cloning into 'example-voting-app'...
+remote: Enumerating objects: 494, done.
+remote: Total 494 (delta 0), reused 0 (delta 0), pack-reused 494
+Receiving objects: 100% (494/494), 236.18 KiB | 13.89 MiB/s, done.
+Resolving deltas: 100% (179/179), done.
+
+3>>[root@ip-172-31-37-139 ~]# cd  /root/example-voting-app/k8s-specifications
+[root@ip-172-31-37-139 k8s-specifications]# ls
+db-deployment.yaml  redis-deployment.yaml  result-deployment.yaml  vote-deployment.yaml  worker-deployment.yaml
+db-service.yaml     redis-service.yaml     result-service.yaml     vote-service.yaml
+4>>[root@ip-172-31-37-139 k8s-specifications]# kubectl apply -f .
+deployment.apps/db created
+service/db created
+deployment.apps/redis created
+service/redis created
+deployment.apps/result created
+service/result created
+deployment.apps/vote created
+service/vote created
+deployment.apps/worker created
+[root@ip-172-31-37-139 k8s-specifications]#
+
+5>>[root@ip-172-31-37-139 k8s-specifications]# kubectl get svc
+NAME     TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
+db       ClusterIP   10.98.142.16    <none>        5432/TCP         3m11s
+kubia    ClusterIP   10.105.28.89    <none>        80/TCP           121m
+redis    ClusterIP   10.110.220.52   <none>        6379/TCP         3m10s
+result   NodePort    10.109.28.187   <none>        5001:31001/TCP   3m10s
+vote     NodePort    10.111.107.82   <none>        5000:31000/TCP   3m10s
+6>>54.169.244.139:31000(vote) and 54.169.244.139:310001(result)
+
+7>>>only could see one vote on result app
+
+8>>[root@ip-172-31-37-139 k8s-specifications]# kubectl delete pod vote-94849dc97-wn5hw
+pod "vote-94849dc97-wn5hw" deleted
+[root@ip-172-31-37-139 k8s-specifications]# kubectl get pods
+NAME                                               READY   STATUS      RESTARTS   AGE
+batch-job-every-fifteen-minutes-1689597900-2bj8h   0/1     Completed   0          34m
+batch-job-every-fifteen-minutes-1689598800-26krv   0/1     Completed   0          19m
+batch-job-every-fifteen-minutes-1689599700-cxvwk   0/1     Completed   0          4m46s
+db-b54cd94f4-5dhnx                                 1/1     Running     0          13m
+kubia-59d857b444-6rhmz                             1/1     Running     0          132m
+kubia-59d857b444-d97kf                             1/1     Running     0          132m
+kubia-59d857b444-vfxpf                             1/1     Running     0          132m
+kubia2-2dmn2                                       1/1     Running     0          3h57m
+kubia2-jvxlp                                       1/1     Running     0          3h57m
+kubia2-vmlhp                                       1/1     Running     0          3h57m
+redis-868d64d78-vbgmb                              1/1     Running     0          13m
+result-5d57b59f4b-nxjfs                            1/1     Running     0          13m
+vote-94849dc97-cb6bl                               1/1     Running     0          6s
+worker-dd46d7584-j4vrm                             1/1     Running     0          13m
+[root@ip-172-31-37-139 k8s-specifications]# kubectl get svc
+NAME     TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
+db       ClusterIP   10.98.142.16    <none>        5432/TCP         13m
+kubia    ClusterIP   10.105.28.89    <none>        80/TCP           132m
+redis    ClusterIP   10.110.220.52   <none>        6379/TCP         13m
+result   NodePort    10.109.28.187   <none>        5001:31001/TCP   13m
+vote     NodePort    10.111.107.82   <none>        5000:31000/TCP   13m
+
+ID changes as pod deleted: Processed by container ID vote-94849dc97-cb6bl
+
+
+worker pod deleted
+[root@ip-172-31-37-139 k8s-specifications]# kubectl delete pod worker-dd46d7584-j4vrm
+pod "worker-dd46d7584-j4vrm" deleted
+[root@ip-172-31-37-139 k8s-specifications]# kubectl get pods
+NAME                                               READY   STATUS      RESTARTS   AGE
+batch-job-every-fifteen-minutes-1689597900-2bj8h   0/1     Completed   0          36m
+batch-job-every-fifteen-minutes-1689598800-26krv   0/1     Completed   0          21m
+batch-job-every-fifteen-minutes-1689599700-cxvwk   0/1     Completed   0          6m50s
+db-b54cd94f4-5dhnx                                 1/1     Running     0          15m
+kubia-59d857b444-6rhmz                             1/1     Running     0          134m
+kubia-59d857b444-d97kf                             1/1     Running     0          134m
+kubia-59d857b444-vfxpf                             1/1     Running     0          134m
+kubia2-2dmn2                                       1/1     Running     0          3h59m
+kubia2-jvxlp                                       1/1     Running     0          3h59m
+kubia2-vmlhp                                       1/1     Running     0          3h59m
+redis-868d64d78-vbgmb                              1/1     Running     0          15m
+result-5d57b59f4b-nxjfs                            1/1     Running     0          15m
+vote-94849dc97-cb6bl                               1/1     Running     0          2m10s
+worker-dd46d7584-2shv5                             1/1     Running     0          6s
+[root@ip-172-31-37-139 k8s-specifications]# kubectl get svc
+NAME     TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
+db       ClusterIP   10.98.142.16    <none>        5432/TCP         15m
+kubia    ClusterIP   10.105.28.89    <none>        80/TCP           134m
+redis    ClusterIP   10.110.220.52   <none>        6379/TCP         15m
+result   NodePort    10.109.28.187   <none>        5001:31001/TCP   15m
+vote     NodePort    10.111.107.82   <none>        5000:31000/TCP   15m
+
+New node is assigned: worker-dd46d7584-2shv5
+
+[root@ip-172-31-37-139 k8s-specifications]# kubectl delete pod db-b54cd94f4-5dhnx
+pod "db-b54cd94f4-5dhnx" deleted
+[root@ip-172-31-37-139 k8s-specifications]# kubectl get pods
+NAME                                               READY   STATUS      RESTARTS   AGE
+batch-job-every-fifteen-minutes-1689597900-2bj8h   0/1     Completed   0          39m
+batch-job-every-fifteen-minutes-1689598800-26krv   0/1     Completed   0          24m
+batch-job-every-fifteen-minutes-1689599700-cxvwk   0/1     Completed   0          9m44s
+db-b54cd94f4-6ql5h                                 1/1     Running     0          35s
+kubia-59d857b444-6rhmz                             1/1     Running     0          137m
+kubia-59d857b444-d97kf                             1/1     Running     0          137m
+kubia-59d857b444-vfxpf                             1/1     Running     0          137m
+kubia2-2dmn2                                       1/1     Running     0          4h2m
+kubia2-jvxlp                                       1/1     Running     0          4h2m
+kubia2-vmlhp                                       1/1     Running     0          4h2m
+redis-868d64d78-vbgmb                              1/1     Running     0          18m
+result-5d57b59f4b-nxjfs                            1/1     Running     1          18m
+vote-94849dc97-cb6bl                               1/1     Running     0          5m4s
+worker-dd46d7584-2shv5                             1/1     Running     1          3m
+
+[root@ip-172-31-37-139 k8s-specifications]# kubectl get svc
+NAME     TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
+db       ClusterIP   10.98.142.16    <none>        5432/TCP         19m
+kubia    ClusterIP   10.105.28.89    <none>        80/TCP           137m
+redis    ClusterIP   10.110.220.52   <none>        6379/TCP         19m
+result   NodePort    10.109.28.187   <none>        5001:31001/TCP   19m
+vote     NodePort    10.111.107.82   <none>        5000:31000/TCP   19m
+
+NEw node assigned: db-b54cd94f4-6ql5h and showing resuld 50/50 on webbase/frenrEnd>>>>>>working after casting vote
+after the db pod get deleted i could see restart for worker and result pod
+after deleting db pod: http://54.169.244.139:31001/
